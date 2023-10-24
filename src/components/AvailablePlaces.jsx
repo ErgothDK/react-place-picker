@@ -8,13 +8,13 @@ export default function AvailablePlaces({ onSelectPlace }) {
   const appContext = useContext(AppContext);
 
   useEffect(() => {
-    fetch(appContext.END_POINTS.GET_PLACES)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setAvaliablePlaces(data.places);
-      });
+    async function fetchPlaces() {
+      const response = await fetch(appContext.END_POINTS.GET_PLACES);
+      const responseData = await response.json();
+      setAvaliablePlaces(responseData.places);
+    }
+
+    fetchPlaces();
   }, []);
 
   return (
