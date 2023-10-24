@@ -3,6 +3,7 @@ import Places from "./Places.jsx";
 import AppContext from "../store/app-context.jsx";
 import customError from "../exceptions/custom-error.js";
 import Error from "./Error.jsx";
+import { sortPlacesByDistance } from "../loc.js";
 
 export default function AvailablePlaces({ onSelectPlace }) {
   const [availablePlaces, setAvaliablePlaces] = useState([]);
@@ -24,7 +25,14 @@ export default function AvailablePlaces({ onSelectPlace }) {
             message: "Failed to fetch places",
           });
 
-        setAvaliablePlaces(responseData.places);
+        navigator.geolocation.getCurrentPosition((position) => {
+          const closedPlaces = sortPlacesByDistance(
+            responseData.places,
+            position.coords.latitude,
+            position.coords.long
+          );
+          setAvaliablePlaces(closedPlaces);
+        });
       } catch (err) {
         setError(err);
       } finally {
