@@ -8,6 +8,7 @@ import AvailablePlaces from "./components/AvailablePlaces.jsx";
 import AppProvider from "./store/AppProvider.jsx";
 import { updateUserPlaces } from "./helpers/fetchData.js";
 import AppContext from "./store/app-context.jsx";
+import Error from "./components/Error.jsx";
 
 function App() {
   const appContext = useContext(AppContext);
@@ -17,6 +18,9 @@ function App() {
   const [userPlaces, setUserPlaces] = useState([]);
 
   const [modalIsOpen, setModalIsOpen] = useState(false);
+
+  const [errorUpdate, setErrorUpdate] = useState();
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   function handleStartRemovePlace(place) {
     setModalIsOpen(true);
@@ -41,7 +45,12 @@ function App() {
     try {
       await updateUserPlaces(appContext, [selectedPlace, ...userPlaces]);
     } catch (err) {
-      console.log(err);
+      setUserPlaces(userPlaces);
+      setErrorUpdate({
+        title: "An Error Ocurred!",
+        message: err.message || "Failed to save the place, try it again later",
+      });
+      setShowErrorModal(true);
     }
   }
 
@@ -53,8 +62,23 @@ function App() {
     setModalIsOpen(false);
   }, []);
 
+  function closeErrorModalHandler() {
+    setErrorUpdate();
+    setShowErrorModal(false);
+  }
+
   return (
     <AppProvider>
+      <Modal open={showErrorModal} onClose={closeErrorModalHandler}>
+        {showErrorModal && (
+          <Error
+            onConfirm={closeErrorModalHandler}
+            title={errorUpdate.title}
+            message={errorUpdate.message}
+          />
+        )}
+      </Modal>
+
       <Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onCancel={handleStopRemovePlace}
