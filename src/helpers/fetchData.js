@@ -13,6 +13,19 @@ export async function getPlaces(appContext) {
   return responseData.places;
 }
 
+export async function getUserPlaces(appContext, userPlaces) {
+  const response = await fetch(appContext.END_POINTS.GET_USER_PLACES);
+  const responseData = await response.json();
+
+  if (!response.ok)
+    throw new customError({
+      title: "An Error Ocurred!",
+      message: "Failed to fetch user places",
+    });
+
+  return responseData.places;
+}
+
 export async function updateUserPlaces(appContext, userPlaces) {
   const response = await fetch(appContext.END_POINTS.PUT_USER_PLACES, {
     method: "PUT",
