@@ -3,7 +3,7 @@ import Places from "./Places.jsx";
 import AppContext from "../store/app-context.jsx";
 import Error from "./Error.jsx";
 import { sortPlacesByDistance } from "../loc.js";
-import { fetchData } from "../helpers/fetchData.js";
+import { getPlaces } from "../helpers/fetchData.js";
 
 export default function AvailablePlaces({ onSelectPlace }) {
   const [availablePlaces, setAvaliablePlaces] = useState([]);
@@ -16,7 +16,7 @@ export default function AvailablePlaces({ onSelectPlace }) {
     async function fetchPlaces() {
       try {
         setIsLoading(true);
-        const places = await fetchData(appContext);
+        const places = await getPlaces(appContext);
 
         navigator.geolocation.getCurrentPosition((position) => {
           const closedPlaces = sortPlacesByDistance(

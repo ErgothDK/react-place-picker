@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useContext } from "react";
 
 import Places from "./components/Places.jsx";
 import Modal from "./components/Modal.jsx";
@@ -6,8 +6,12 @@ import DeleteConfirmation from "./components/DeleteConfirmation.jsx";
 import logoImg from "./assets/logo.png";
 import AvailablePlaces from "./components/AvailablePlaces.jsx";
 import AppProvider from "./store/AppProvider.jsx";
+import { updateUserPlaces } from "./helpers/fetchData.js";
+import AppContext from "./store/app-context.jsx";
 
 function App() {
+  const appContext = useContext(AppContext);
+
   const selectedPlace = useRef();
 
   const [userPlaces, setUserPlaces] = useState([]);
@@ -23,7 +27,7 @@ function App() {
     setModalIsOpen(false);
   }
 
-  function handleSelectPlace(selectedPlace) {
+  async function handleSelectPlace(selectedPlace) {
     setUserPlaces((prevPickedPlaces) => {
       if (!prevPickedPlaces) {
         prevPickedPlaces = [];
@@ -33,6 +37,12 @@ function App() {
       }
       return [selectedPlace, ...prevPickedPlaces];
     });
+
+    try {
+      await updateUserPlaces(appContext, [selectedPlace, ...userPlaces]);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const handleRemovePlace = useCallback(async function handleRemovePlace() {
